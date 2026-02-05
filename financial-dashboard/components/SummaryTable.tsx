@@ -6,46 +6,32 @@ interface SummaryTableProps {
   data: SummaryRow[];
 }
 
-/** Renders the P&L summary as a clean two-column table with color-coded values */
-function getValueClass(type?: SummaryRow["type"]) {
+function getAmountClass(type?: SummaryRow["type"]) {
   switch (type) {
     case "positive":
-      return "text-green-500 font-medium";
+      return "t-amount positive";
     case "negative":
-      return "text-red-500 font-medium";
+      return "t-amount negative";
     default:
-      return "text-slate-200";
+      return "t-amount text-foreground";
   }
 }
 
+/** Renders the P&L summary as transaction-style list (outline card context) */
 export default function SummaryTable({ data }: SummaryTableProps) {
   return (
-    <div className="overflow-x-auto rounded-lg border border-slate-600 bg-slate-800/50 shadow-lg">
-      <table className="w-full min-w-[280px] border-collapse text-left">
-        <thead>
-          <tr className="border-b border-slate-600 bg-slate-700/50">
-            <th className="px-4 py-3 text-sm font-semibold text-slate-300">
-              Metric
-            </th>
-            <th className="px-4 py-3 text-sm font-semibold text-slate-300 text-right">
-              Value
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((row, i) => (
-            <tr
-              key={row.metric}
-              className="border-b border-slate-700/80 transition-colors hover:bg-slate-700/30 last:border-b-0"
-            >
-              <td className="px-4 py-3 text-slate-200">{row.metric}</td>
-              <td className={`px-4 py-3 text-right ${getValueClass(row.type)}`}>
-                {row.value}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <ul className="transaction-list flex flex-col gap-0">
+      {data.map((row) => (
+        <li
+          key={row.metric}
+          className="transaction-item flex items-baseline justify-between gap-8 border-b border-border-default/10 py-5 last:border-b-0"
+        >
+          <span className="t-name">{row.metric}</span>
+          <span className={`flex-shrink-0 ${getAmountClass(row.type)}`}>
+            {row.value}
+          </span>
+        </li>
+      ))}
+    </ul>
   );
 }

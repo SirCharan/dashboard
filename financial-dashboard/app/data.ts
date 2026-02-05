@@ -43,7 +43,7 @@ export const metricsData: MetricsRow[] = [
   { metric: "Sharpe Ratio", value: "2.29", explanation: "Risk-adjusted return (all volatility)", type: "positive" },
   { metric: "Sortino Ratio", value: "5.98", explanation: "Risk-adjusted return (downside volatility only)", type: "positive" },
   { metric: "Max Drawdown %", value: "-18.07%", explanation: "Max peak-to-trough decline on cumulative P&L", type: "negative" },
-  { metric: "CAGR", value: "1.43", explanation: "Compounded annual growth rate (approx)", type: "positive" },
+  { metric: "CAGR", value: "143%", explanation: "Compounded annual growth rate (approx)", type: "positive" },
   { metric: "Avg Trade Duration (days)", value: "5.19", explanation: "Approx. period / total trades", type: "neutral" },
 ];
 

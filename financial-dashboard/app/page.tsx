@@ -6,26 +6,30 @@ import MetricsTable from "@/components/MetricsTable";
 import KeyMetricCard from "@/components/KeyMetricCard";
 import { WinLossPieChart, CumulativePnlChart } from "@/components/ChartsSection";
 
-/** Heroicons-style SVGs (inline, no extra deps) */
-function ChartBarIcon() {
+/** Mini sparkline for dark card (reference-style SVG) */
+function MiniSparkline() {
   return (
-    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-    </svg>
-  );
-}
-function TrophyIcon() {
-  return (
-    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-    </svg>
-  );
-}
-function ScaleIcon() {
-  return (
-    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
-    </svg>
+    <div className="chart-container mt-4 flex h-[60px] w-full items-end">
+      <svg
+        viewBox="0 0 300 60"
+        preserveAspectRatio="none"
+        className="h-full w-full"
+        style={{ stroke: "currentColor", fill: "none" }}
+      >
+        <path
+          d="M0,50 Q30,45 60,30 T120,40 T180,20 T240,35 T300,10"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        />
+        <path
+          d="M0,50 Q30,45 60,30 T120,40 T180,20 T240,35 T300,10 V60 H0 Z"
+          fill="currentColor"
+          fillOpacity="0.1"
+          stroke="none"
+        />
+      </svg>
+    </div>
   );
 }
 
@@ -35,67 +39,104 @@ export default function DashboardPage() {
   const netPnl = summaryData.find((m) => m.metric === "Net P&L (after charges)");
 
   return (
-    <div className="space-y-8">
-      {/* Key metrics cards */}
-      <section aria-labelledby="key-metrics-heading">
-        <h2 id="key-metrics-heading" className="sr-only">
-          Key metrics
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <KeyMetricCard
-            title="Net P&L (after charges)"
-            value={netPnl?.value ?? "—"}
-            subtitle="Total profit after all charges"
-            variant="positive"
-            icon={<ChartBarIcon />}
-          />
-          <KeyMetricCard
-            title="Win Rate"
-            value={winRate?.value ?? "—"}
-            subtitle={winRate?.explanation}
-            variant="positive"
-            icon={<TrophyIcon />}
-          />
-          <KeyMetricCard
-            title="Sharpe Ratio"
-            value={sharpe?.value ?? "—"}
-            subtitle={sharpe?.explanation}
-            variant="positive"
-            icon={<ScaleIcon />}
-          />
+    <div
+      id="overview"
+      className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:grid-auto-rows-[minmax(150px,auto)] lg:gap-6"
+    >
+      {/* Hero – ghost span-2 */}
+      <div className="card ghost px-6 py-6 lg:col-span-2 sm:px-8 sm:py-8">
+        <h1 className="mb-2 text-[2rem] font-medium tracking-tight">financial overview</h1>
+        <p className="max-w-[400px] text-muted">
+          Financial overview of Stocky AI&apos;s performance from 1st June 2025 to today.
+        </p>
+      </div>
+
+      {/* Net P&L hero – dark span-2 with value-lg + sparkline */}
+      <div className="card dark flex flex-col justify-between px-6 py-6 lg:col-span-2 sm:px-8 sm:py-8">
+        <div>
+          <span className="label">net p&l (after charges)</span>
+          <span className="value-lg block text-white">
+            {netPnl?.value ?? "—"}
+          </span>
+          <span className="label mt-2 block text-white/50">total realized after all charges</span>
         </div>
-      </section>
+        <MiniSparkline />
+      </div>
+
+      {/* Allocation – outline row-2 (win/loss as allocation) */}
+      <div className="card outline px-6 py-6 lg:row-span-2 sm:px-8 sm:py-8">
+        <span className="label">allocation</span>
+        <div className="mt-6 flex flex-1 flex-col items-center justify-center">
+          <WinLossPieChart compact />
+        </div>
+        <ul className="transaction-list mt-6 space-y-3 border-t border-border-default/20 pt-6">
+          <li className="flex justify-between text-sm">
+            <span className="t-meta">wins</span>
+            <span className="t-amount positive">72.9%</span>
+          </li>
+          <li className="flex justify-between text-sm">
+            <span className="t-meta">losses</span>
+            <span className="t-amount negative">27.1%</span>
+          </li>
+        </ul>
+      </div>
+
+      {/* P&L Summary – outline span-2 row-2 (recent activity style) */}
+      <div id="summary" className="card outline px-6 py-6 lg:col-span-2 lg:row-span-2 sm:px-8 sm:py-8">
+        <span className="label">p&l performance summary</span>
+        <div className="mt-6 flex-1">
+          <SummaryTable data={summaryData} />
+        </div>
+      </div>
+
+      {/* Key metrics – outline cards (SPX/NASDAQ style) */}
+      <div className="card outline px-6 py-6 sm:px-8 sm:py-8">
+        <span className="label">win rate</span>
+        <span className="value">{winRate?.value ?? "—"}</span>
+        <div className="chart-container mt-6 flex flex-1 items-end gap-1">
+          {[40, 70, 50, 90, 60, 80].map((h, i) => (
+            <div
+              key={i}
+              className="bar flex-1 bg-foreground opacity-20 transition-opacity hover:opacity-100"
+              style={{ height: `${h}%` }}
+            />
+          ))}
+        </div>
+      </div>
+      <div className="card outline px-6 py-6 sm:px-8 sm:py-8">
+        <span className="label">sharpe ratio</span>
+        <span className="value">{sharpe?.value ?? "—"}</span>
+        <div className="chart-container mt-6 flex flex-1 items-end gap-1">
+          {[30, 50, 40, 60, 55, 75].map((h, i) => (
+            <div
+              key={i}
+              className="bar flex-1 bg-foreground opacity-20 transition-opacity hover:opacity-100"
+              style={{ height: `${h}%` }}
+            />
+          ))}
+        </div>
+      </div>
 
       {/* Charts row */}
-      <section className="grid gap-6 md:grid-cols-2" aria-label="Charts">
-        <div className="rounded-xl border border-slate-600 bg-slate-800/50 p-4 shadow-lg">
-          <h3 className="mb-3 text-sm font-semibold text-slate-300">
-            Win / Loss distribution
-          </h3>
+      <section id="charts" className="card outline px-6 py-6 lg:col-span-4 sm:px-8 sm:py-8" aria-label="Charts">
+        <span className="label">win / loss distribution</span>
+        <div className="mt-6 h-[280px]">
           <WinLossPieChart />
         </div>
-        <div className="rounded-xl border border-slate-600 bg-slate-800/50 p-4 shadow-lg">
-          <h3 className="mb-3 text-sm font-semibold text-slate-300">
-            Cumulative P&L (sample)
-          </h3>
+      </section>
+      <div className="card outline px-6 py-6 lg:col-span-4 sm:px-8 sm:py-8">
+        <span className="label">cumulative p&l (sample)</span>
+        <div className="mt-6 h-[260px]">
           <CumulativePnlChart />
         </div>
-      </section>
+      </div>
 
-      {/* P&L Summary table */}
-      <section aria-labelledby="summary-heading">
-        <h2 id="summary-heading" className="mb-4 text-lg font-semibold text-slate-200 md:text-xl">
-          P&L Performance Summary
-        </h2>
-        <SummaryTable data={summaryData} />
-      </section>
-
-      {/* Performance Metrics table */}
-      <section aria-labelledby="metrics-heading">
-        <h2 id="metrics-heading" className="mb-4 text-lg font-semibold text-slate-200 md:text-xl">
-          Performance Metrics
-        </h2>
-        <MetricsTable data={metricsData} />
+      {/* Performance metrics – full width */}
+      <section id="metrics" className="card outline lg:col-span-4 px-6 py-6 sm:px-8 sm:py-8">
+        <span className="label">performance metrics</span>
+        <div className="mt-6">
+          <MetricsTable data={metricsData} />
+        </div>
       </section>
     </div>
   );

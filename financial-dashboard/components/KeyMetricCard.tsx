@@ -10,13 +10,13 @@ interface KeyMetricCardProps {
   icon?: ReactNode;
 }
 
-const variantStyles = {
-  positive: "border-green-500/30 bg-green-500/5 text-green-400",
-  negative: "border-red-500/30 bg-red-500/5 text-red-400",
-  neutral: "border-slate-500/30 bg-slate-500/5 text-slate-300",
+const valueColorClass = {
+  positive: "text-positive",
+  negative: "text-negative",
+  neutral: "text-foreground",
 };
 
-/** Highlights a single key metric in a card with optional icon */
+/** Highlights a single key metric in a dark overlay card with optional icon */
 export default function KeyMetricCard({
   title,
   value,
@@ -26,19 +26,19 @@ export default function KeyMetricCard({
 }: KeyMetricCardProps) {
   return (
     <div
-      className={`rounded-xl border p-5 shadow-lg transition-all hover:shadow-xl hover:scale-[1.02] ${variantStyles[variant]}`}
+      className="card dark p-5 transition-opacity hover:opacity-95"
       title={subtitle}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-slate-400">{title}</p>
-          <p className="mt-1 truncate text-2xl font-bold md:text-3xl">{value}</p>
+          <p className="label">{title.toLowerCase()}</p>
+          <p className={`value-lg mt-1 truncate ${valueColorClass[variant]}`}>{value}</p>
           {subtitle && (
-            <p className="mt-1 text-xs text-slate-500 line-clamp-2">{subtitle}</p>
+            <p className="t-meta mt-1 line-clamp-2 text-white/70">{subtitle}</p>
           )}
         </div>
         {icon && (
-          <div className="flex-shrink-0 rounded-lg bg-slate-700/50 p-2">
+          <div className="flex-shrink-0 rounded-lg bg-white/10 p-2 text-white">
             {icon}
           </div>
         )}
